@@ -2,14 +2,23 @@
 interface Props {
 	title: string;
 	body: string;
-	href: string;
+	href?: string;
 }
+
+const params = new URLSearchParams();
+	params.append("response_type", "code");
+	params.append("client_id",'5b859d87f2aa4ab7bccf9650aa19f62b');
+	params.append("scope", "user-read-private user-read-email playlist-read-private playlist-read-collaborative");
+    params.append("redirect_uri", "http://localhost:4321/callback");
+
+const loginRedirectUrl = `https://accounts.spotify.com/authorize?${params.toString()}`;
+
 
 const { href, title, body } = Astro.props;
 ---
 
 <li class="link-card">
-	<a href={href}>
+	<a href={loginRedirectUrl}>
 		<h2>
 			{title}
 			<span>&rarr;</span>
