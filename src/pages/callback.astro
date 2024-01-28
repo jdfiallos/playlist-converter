@@ -1,7 +1,4 @@
 ---
-
-
-
 const getAccessToken= async (code: string) => {
 
 const params = new URLSearchParams();
@@ -14,22 +11,48 @@ const params = new URLSearchParams();
   const result = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: {
-            "Content-Type": "x-www-form-urlencoded",
+            'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: params
     });
 
-    console.log('result', result);
+    // TODO: Guardar en el window.localStorage el token
+    const data = await result.json();
+    window.localStorage.setItem('token', data?.access_token);
+    
+    // Crear la pagina con la data de las playlists
+    // TODO: Redirigir a la home
 
+    console.log('data', data);
+}
+
+
+let playlistData = [''];
+
+//  Esta funcion es para obtener las playlists del usuario, la cual usare en home....
+// Ahorita trabajar en la home, y en el header, para que se vea el nombre del usuario y su foto
+const getPlaylists = async () => {
+    
+    const token = window.localStorage.getItem('token');
+    console.log('token', token);
+
+    const playlists = await fetch("https://api.spotify.com/v1/me/playlists", {
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + token,
+        },
+    });
+
+    const data = await playlists.json();
+    playlistData = await playlists.json();
+    console.log('data_playlist', data);
+    return data;
 }
 
 const code = Astro.url.searchParams.get('code');
 // TODO: get token from code, and now we can access to user INFO.
 
-if (code) {
-    getAccessToken(code);
-}
-
+if (code) getAccessToken(code);
 
 export const prerender = false
 
@@ -37,3 +60,13 @@ export const prerender = false
 
 
 <h1>Esto es un callback</h1>
+
+<div>
+    { playlistData?.map((item: any) => {
+        return <div>
+            <h1>{item.name}</h1>
+            // <img src={item.images[0].url} alt="" />
+        </div>
+    })
+    }
+</div>
