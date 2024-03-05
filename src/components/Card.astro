@@ -1,33 +1,30 @@
 ---
+import spotifyLoginRedirectUrl from '../constants/spotifyRedirectAuth';
+
 interface Props {
 	title: string;
-	body: string;
 	href?: string;
 }
 
-const params = new URLSearchParams();
-	params.append("response_type", "code");
-	params.append("client_id",'5b859d87f2aa4ab7bccf9650aa19f62b');
-	params.append("scope", "user-read-private user-read-email playlist-read-private playlist-read-collaborative");
-    params.append("redirect_uri", "http://localhost:4321/callback");
 
-const loginRedirectUrl = `https://accounts.spotify.com/authorize?${params.toString()}`;
-
-
-const { href, title, body } = Astro.props;
+const {title } = Astro.props;
 ---
 
 <li class="link-card">
-	<a href={loginRedirectUrl}>
-		<h2>
-			{title}
-			<span>&rarr;</span>
-		</h2>
-		<p>
-			{body}
-		</p>
+	<a href={spotifyLoginRedirectUrl}>
+		<div  class="flex align-center justify-center gap-4">
+			<h2>
+				{title}
+			</h2>
+			<img
+			class=" w-12 h-12"
+			src="public/Spotify.png" 
+			alt="Spotify" 
+			width="24" height="24" />
+		</div>
 	</a>
 </li>
+
 <style>
 	.link-card {
 		list-style: none;
@@ -68,3 +65,4 @@ const { href, title, body } = Astro.props;
 		color: rgb(var(--accent-light));
 	}
 </style>
+../hooks/spotifyRedirectAuth

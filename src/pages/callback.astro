@@ -1,72 +1,35 @@
----
-const getAccessToken= async (code: string) => {
+<h1>Loading...</h1>
 
-const params = new URLSearchParams();
+<div>
+</div>
+
+<script type="module">
+    const paramsUrl = new URLSearchParams(window.location.search);
+    const code = paramsUrl.get('code');
+
+    const params = new URLSearchParams();
     params.append("grant_type", "authorization_code");
     params.append("code", code);
     params.append("client_id",'5b859d87f2aa4ab7bccf9650aa19f62b');
     params.append("redirect_uri", "http://localhost:4321/callback");
     params.append("client_secret",'b405c1a277d342f0ac2139db9d679146');
-
-  const result = await fetch("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params
-    });
-
-    // TODO: Guardar en el window.localStorage el token
-    const data = await result.json();
-    window.localStorage.setItem('token', data?.access_token);
-    
-    // Crear la pagina con la data de las playlists
-    // TODO: Redirigir a la home
-
-    console.log('data', data);
-}
-
-
-let playlistData = [''];
-
-//  Esta funcion es para obtener las playlists del usuario, la cual usare en home....
-// Ahorita trabajar en la home, y en el header, para que se vea el nombre del usuario y su foto
-const getPlaylists = async () => {
-    
-    const token = window.localStorage.getItem('token');
-    console.log('token', token);
-
-    const playlists = await fetch("https://api.spotify.com/v1/me/playlists", {
-        method: "GET",
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        },
-    });
-
-    const data = await playlists.json();
-    playlistData = await playlists.json();
-    console.log('data_playlist', data);
-    return data;
-}
-
-const code = Astro.url.searchParams.get('code');
-// TODO: get token from code, and now we can access to user INFO.
-
-if (code) getAccessToken(code);
-
-export const prerender = false
-
----
-
-
-<h1>Esto es un callback</h1>
-
-<div>
-    { playlistData?.map((item: any) => {
-        return <div>
-            <h1>{item.name}</h1>
-            // <img src={item.images[0].url} alt="" />
-        </div>
+  
+    fetch(`https://accounts.spotify.com/api/token?${params}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     })
-    }
-</div>
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Error en la autenticación');
+      }
+    })
+    .then(data => {
+      window.location.href = '/home'; 
+    })
+    .catch(error => console.error('Error al autenticar:', error));
+  </script>
+  
